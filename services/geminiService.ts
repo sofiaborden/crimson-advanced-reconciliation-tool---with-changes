@@ -1,14 +1,19 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { CrimsonTransaction, BankTransaction, MatchedPair } from "../types";
 
-// Ensure the API key is available in the environment variables
-if (!process.env.API_KEY) {
-    // In a real app, you'd want to handle this more gracefully.
-    // For this context, we assume it's set.
-    console.warn("API_KEY environment variable not set. AI features will not work.");
-}
+// Initialize AI only if API key is available
+let ai: GoogleGenAI | null = null;
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY! });
+if (process.env.API_KEY) {
+    try {
+        ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    } catch (error) {
+        console.warn("Failed to initialize Gemini AI:", error);
+        ai = null;
+    }
+} else {
+    console.log("API_KEY environment variable not set. Using mock AI data for development.");
+}
 
 const responseSchema = {
     type: Type.ARRAY,
@@ -42,8 +47,8 @@ export const reconcileWithAI = async (
     bankTransactions: BankTransaction[]
 ): Promise<MatchedPair[]> => {
 
-    // For development, use mock data when API key is not configured
-    if (!process.env.API_KEY) {
+    // For development, use mock data when API key is not configured or AI failed to initialize
+    if (!ai || !process.env.API_KEY) {
         console.log("Using mock AI analysis for development");
         return generateMockMatches(crimsonTransactions, bankTransactions);
     }
