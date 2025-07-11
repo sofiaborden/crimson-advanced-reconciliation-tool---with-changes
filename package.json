@@ -8,7 +8,8 @@
     "build": "vite build",
     "build-with-types": "tsc && vite build",
     "preview": "vite preview",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "render-build": "npm ci && npm run build"
   },
   "dependencies": {
     "react-dom": "^19.1.0",

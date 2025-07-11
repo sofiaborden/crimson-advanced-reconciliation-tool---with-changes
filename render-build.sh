@@ -1,7 +1,10 @@
 #!/bin/bash
 
 # Install dependencies
-npm install
+npm ci
 
 # Build the application
 npm run build
+
+# Verify build output
+ls -la dist/
